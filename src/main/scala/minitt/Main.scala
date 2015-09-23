@@ -7,11 +7,29 @@
 
 package minitt
 
+import scala.io.Source._
+
 object Main {
 
   def main(args: Array[String]) : Unit = {
 
-    println("MiniTT in Scala")
+    if (args.length != 1) {
+
+      println("Usage: opetopictt <filename>")
+
+    } else {
+
+      val lines : String = 
+        fromFile(args(0)).mkString
+
+      println("MiniTT in Scala")
+
+      import MiniTTParser._
+
+      val res = parseAll(phrase(expr), lines)
+      println(res)
+
+    }
 
   }
 
