@@ -11,5 +11,9 @@ package object minitt {
   type Name = String
   type CaseTk = ((Int, Int), String)
   type DataTk = ((Int, Int), String)
+  type Pos = ((Int, Int), String)
+  type SClos = (List[(Name, Expr)], Rho)
+  type   Nf  = Val
+  type TVal  = Val
 
 }

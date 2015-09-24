@@ -8,4 +8,4 @@ let id : Pi A : U . A -> A
 let fst : Pi A : U . Pi B : A -> U . Pi x : (Sig a : A . B a) . A
         = \A . \B . \x . x.1 ;
 
-Void
+0
