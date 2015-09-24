@@ -25,10 +25,19 @@ object Main {
       println("MiniTT in Scala")
 
       import MiniTTParser._
+      import MiniTTTypeChecker._
 
-      val res = parseAll(phrase(expr), lines)
-      println(res)
+      parseAll(phrase(expr), lines) match {
+        case Success(e, _) => {
 
+          println("Parsing succesful, now typechecking ...")
+
+          val res = check(RNil, Nil, e, One)
+          println("Result: " ++ res.toString)
+
+        }
+        case err => println(err.toString)
+      }
     }
 
   }
