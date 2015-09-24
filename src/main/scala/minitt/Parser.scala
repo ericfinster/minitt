@@ -8,6 +8,7 @@
 package minitt
 
 import scala.util.parsing.combinator._
+import scala.util.parsing.input._
 
 object MiniTTParser extends RegexParsers with PackratParsers {
 
@@ -27,10 +28,10 @@ object MiniTTParser extends RegexParsers with PackratParsers {
         { case "Pi" ~ p ~ ":" ~ e ~ "." ~ f => EPi(p, e, f) }
     | "Sig" ~ pattern1 ~ ":" ~ expr1 ~ "." ~ expr1 ^^
         { case "Sig" ~ p ~ ":" ~ e ~ "." ~ f => ESig(p, e, f) }
-    | "fun" ~ "(" ~ repsep(branch, "|") ~ ")" ^^
-        { case "fun" ~ "(" ~ bs ~ ")" => ECase(((0, 0), ""), bs) }
-    | "Sum" ~ "(" ~ repsep(summand, "|") ~ ")" ^^
-        { case "Sum" ~ "(" ~ ss ~ ")" => EData(((0, 0), ""), ss) }
+    | positioned(caseTk) ^^
+        { case ctk@CaseTk(bs) => ECase(((ctk.pos.line, ctk.pos.column), "fun"), bs) }
+    | positioned(dataTk) ^^
+        { case dtk@DataTk(ss) => EData(((dtk.pos.line, dtk.pos.column), "Sum"), ss) }
     | decl ~ ";" ~ expr1 ^^ 
         { case d ~ ";" ~ e => EDec(d, e) }
     | expr2 ~ "->" ~ expr1 ^^ 
@@ -39,6 +40,17 @@ object MiniTTParser extends RegexParsers with PackratParsers {
         { case e ~ "*" ~ f => ESig(Punit, e, f) }
     | expr2
   )
+
+  case class CaseTk(bs: List[Branch]) extends Positional
+  case class DataTk(ss: List[Summand]) extends Positional
+
+  lazy val caseTk: PackratParser[CaseTk] = 
+    "fun" ~ "(" ~ repsep(branch, "|") ~ ")" ^^ 
+      { case "fun" ~ "(" ~ bs ~ ")" => CaseTk(bs) }
+
+  lazy val dataTk: PackratParser[DataTk] = 
+    "Sum" ~ "(" ~ repsep(summand, "|") ~ ")" ^^
+      { case "Sum" ~ "(" ~ ss ~ ")" => DataTk(ss) }
 
   lazy val expr2: PackratParser[Expr] = (
       "$" ~ ident ~ expr3 ^^
