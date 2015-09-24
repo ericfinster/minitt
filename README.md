@@ -1,2 +1,2 @@
 # minitt
-An implementation of [MiniTT](www.cse.chalmers.se/~bengt/papers/GKminiTT.pdf) in Scala
+An implementation of [MiniTT](http://www.cse.chalmers.se/~bengt/papers/GKminiTT.pdf) in Scala
